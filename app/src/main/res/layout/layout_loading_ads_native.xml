@@ -107,7 +107,6 @@
             style="@style/AppTheme.Ads"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true" />
-
     </RelativeLayout>
 
 </com.facebook.shimmer.ShimmerFrameLayout>

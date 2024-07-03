@@ -12,7 +12,8 @@
         maven {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
-    implementation 'com.github.trongluan99:Qtonz-Studio:$version'
+  
+    implementation 'com.github.hardik575:qtonzsdk:$version'
     implementation 'com.google.android.play:core:1.10.3'
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
     implementation 'com.google.android.gms:play-services-ads:21.4.0'
@@ -100,8 +101,22 @@ public class App extends AdsMultiDexApplication {
         AppPurchase.getInstance().initBilling(this, listIAP, listSub);
     }
 }
+
 ~~~
 
+# GDPR
+~~~  
+
+  if (isEnableUMP()) {
+            adsConsentManager = new AdsConsentManager(this);
+            adsConsentManager.requestUMP(
+                    canRequestAds -> runOnUiThread(this::loadSplash));
+        } else {
+            AperoAd.getInstance().initAdsNetwork();
+            loadSplash();
+        }
+
+~~~
 # Ad Splash Interstitial
 ~~~   
 QtonzAd.getInstance().loadSplashInterstitialAds(this, BuildConfig.ad_interstitial_splash, 25000, 5000, new AdCallback() {
@@ -112,6 +127,78 @@ QtonzAd.getInstance().loadSplashInterstitialAds(this, BuildConfig.ad_interstitia
                 finish();
             }
         });
+~~~
+# Ad Splash AppOpen
+~~~         
+ 
+  // Splash AppOpen load
+ 
+        AppOpenManager.getInstance().loadOpenAppAdSplash(
+                this,
+                "ca-app-pub-3940256099942544/9257395921",
+                timeDelay,
+                timeout,
+                false,
+                new AdCallback() {
+                    @Override
+                    public void onAdSplashReady() {
+                        super.onAdSplashReady();
+                        if (isDestroyed() || isFinishing()) return;
+                        showAdsOpenAppSplash();
+                    }
+
+                    @Override
+                    public void onNextAction() {
+                        super.onNextAction();
+                        if (isDestroyed() || isFinishing()) return;
+                        QtonzApp.getApplication().isAdCloseSplash.postValue(true);
+                        navigateToNextScreen();
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@Nullable LoadAdError i) {
+                        super.onAdFailedToLoad(i);
+                
+                        if (isDestroyed() || isFinishing()) return;
+                        QtonzApp.getApplication().isAdCloseSplash.postValue(true);
+                        navigateToNextScreen();
+                    }
+                }
+        );   
+        
+  // Splash AppOpen Show
+  
+  
+      private void showAdsOpenAppSplash() {
+        AppOpenManager.getInstance().showAppOpenSplash(
+                this,
+                new AdCallback() {
+                    @Override
+                    public void onNextAction() {
+                        super.onNextAction();
+                        if (isDestroyed() || isFinishing()) return;
+                        navigateToNextScreen();
+                    }
+
+                    @Override
+                    public void onAdFailedToShow(@Nullable AdError adError) {
+                        super.onAdFailedToShow(adError);
+                        if (isDestroyed() || isFinishing()) return;
+                        QtonzApp.getApplication().isAdCloseSplash.postValue(true);
+                        navigateToNextScreen();
+                    }
+
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                        if (isDestroyed() || isFinishing()) return;
+                        QtonzApp.getApplication().isAdCloseSplash.postValue(true);
+                        navigateToNextScreen();
+                    }
+                }
+        );
+    }  
+        
 ~~~   
 
 # Ad Banner
@@ -173,7 +260,225 @@ QtonzAd.getInstance().loadNativeAdResultCallback(this, BuildConfig.ad_native, R.
 if (mApNativeAd != null) {
             QtonzAd.getInstance().populateNativeAdView(this, mApNativeAd, frAds, shimmerAds);
         }
+        
 ~~~
+# Native: Layout Big
+~~~   
+<com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/ad_unit_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_native_ad"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="25dip"
+                android:paddingTop="8dip"
+                android:paddingEnd="8dip"
+                android:paddingBottom="8dip">
+
+                <ImageView
+                    android:id="@+id/ad_app_icon"
+                    android:layout_width="35dip"
+                    android:layout_height="35dip"
+                    android:adjustViewBounds="true" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dip"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/ad_headline"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10sdp" />
+
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="5dp">
+
+                        <TextView
+                            android:id="@+id/ad_advertiser"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:lines="2"
+                            android:textColor="@color/black"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/ad_body"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <com.google.android.gms.ads.nativead.MediaView
+                android:id="@+id/ad_media"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_5sdp" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/ad_call_to_action"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/ads_bg_lib"
+                android:gravity="center"
+                android:text="Install"
+                android:textColor="@color/colorWhite"
+                android:textSize="@dimen/_12sdp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/AppTheme.Ads"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
+
+    </RelativeLayout>
+
+</com.google.android.gms.ads.nativead.NativeAdView>
+
+~~~ 
+# Native: Layout Big
+~~~ 
+<com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:padding="8dip"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView3">
+
+            <ImageView
+                android:id="@+id/ad_app_icon"
+                android:layout_width="35dip"
+                android:layout_height="35dip"
+                android:adjustViewBounds="true"
+                android:src="@color/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dip"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/ad_headline"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/_14sdp" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/ad_advertiser"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="bottom"
+                        android:lines="1"
+                        android:text="@string/bottom_sheet_behavior"
+                        android:textColor="@color/colorAds"
+                        android:textSize="@dimen/_8sdp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/ad_body"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:maxLines="3"
+            android:text="@string/appbar_scrolling_view_behavior"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/linearLayout3"
+            app:layout_constraintStart_toStartOf="@+id/linearLayout3"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/ad_call_to_action"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/ads_bg_lib"
+            android:gravity="center"
+            android:text="install"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_12sdp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/ad_body"
+            app:layout_constraintStart_toStartOf="@+id/ad_body"
+            app:layout_constraintTop_toBottomOf="@+id/ad_body" />
+
+        <TextView
+            android:id="@+id/textView3"
+            style="@style/AppTheme.Ads"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</com.google.android.gms.ads.nativead.NativeAdView>
+~~~   
 
 # Reward: Load
 ~~~
@@ -239,6 +544,62 @@ AppPurchase.getInstance().setPurchaseListener(new PurchaseListener() {
 
 btnIap.setOnClickListener(v -> AppPurchase.getInstance().purchase(MainActivity.this, "android.test.purchased"));
 ~~~
+
+# Intersial : Pre Load
+~~~
+
+   private ApInterstitialAd mInterstitialAd;
+
+        QtonzAd.getInstance().getInterstitialAds(MbitActivity.this, InterId, new AdCallback() {
+            @Override
+            public void onApInterstitialLoad(@Nullable ApInterstitialAd apInterstitialAd) {
+                super.onApInterstitialLoad(apInterstitialAd);
+                mInterstitialAd = apInterstitialAd;
+                Toast.makeText(MbitActivity.this, "Ads Ready", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+~~~
+
+
+# Intersial : Pre Load Show
+~~~
+
+       QtonzAd.getInstance().forceShowInterstitial(MbitActivity.this, mInterstitialAd, new AdCallback() {
+                    @Override
+                    public void onAdClosed() {
+                        super.onAdClosed();
+                      
+
+                    }
+                }, true);
+                
+       ==> true is a reload value         
+
+~~~
+
+# Intersial : Ontime Load And Show
+~~~
+
+       QtonzAd.getInstance().loadAndShowIntersialAd(MbitActivity.this, InterId, new AdCallback() {
+             @Override
+             public void onNextAction() {
+                 super.onNextAction();
+                 intent.putExtra("id", 6);
+                 startActivity(intent);
+             }
+
+             @Override
+             public void onAdFailedToShow(@androidx.annotation.Nullable AdError adError) {
+                 super.onAdFailedToShow(adError);
+                 intent.putExtra("id", 6);
+                 startActivity(intent);
+             }
+         });
+~~~
+
+
+
 
 
 

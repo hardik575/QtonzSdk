@@ -2,11 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
     }
@@ -21,6 +21,9 @@ android {
         }
         buildTypes {
         }
+    }
+    lintOptions {
+        checkReleaseBuilds false
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -73,15 +76,53 @@ dependencies {
     implementation 'com.google.android.ump:user-messaging-platform:2.2.0'
 }
 
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
 afterEvaluate {
+
     publishing {
         publications {
-            release(MavenPublication) {
+            LibraryRelease(MavenPublication) {
                 from components.release
+                artifact(sourceJar)
                 groupId = 'com.github.hardik575'
-                artifactId = 'QtonzSdk'
-                version = '1.0.0'
+                artifactId = 'qtonzsdk'
+                version = '1.0.2'
+            }
+
+        }
+        publications.all {
+            pom.withXml {
+                asNode().dependencies.'*'
+                        .findAll() {
+                            it.scope.text() == 'runtime' &&
+                                    project.configurations.implementation.allDependencies.find {
+                                        dep -> dep.name == it.artifactId.text()
+                                    }
+                        }.each { it.scope*.value = 'compile'}
             }
         }
+
+
+        repositories {
+            maven {
+                name = "GitHubPackages"
+                url = uri("https://maven.pkg.github.com/hardik575/QtonzSdk")
+
+                credentials {
+                    username = "hardik575"
+                    password = "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"
+                }
+                mavenContent {
+                    snapshotsOnly() // Ensure it only allows snapshots
+                }
+            }
+        }
+
     }
+
+
 }

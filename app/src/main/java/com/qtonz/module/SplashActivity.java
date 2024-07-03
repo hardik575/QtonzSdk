@@ -40,20 +40,20 @@ public class SplashActivity extends AppCompatActivity {
 
             adsConsentManager = new AdsConsentManager(this);
 
-//            adsConsentManager.requestUMP(
-//
-//                    true,
-//
-//                    deviceId,
-//
-//                    false,
-//
-//                    canRequestAds -> runOnUiThread(this::loadSplash)
-//
-//            );
-
             adsConsentManager.requestUMP(
-                    canRequestAds -> runOnUiThread(this::loadSplash));
+
+                    true,
+
+                    deviceId,
+
+                    false,
+
+                    canRequestAds -> runOnUiThread(this::loadSplash)
+
+            );
+//
+//            adsConsentManager.requestUMP(
+//                    canRequestAds -> runOnUiThread(this::loadSplash));
 
         } else {
 

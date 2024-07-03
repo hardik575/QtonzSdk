@@ -1,0 +1,3 @@
+include ':qtonzsdk'
+include ':app'
+rootProject.name = "Qtonz-Studio"

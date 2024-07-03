@@ -28,8 +28,8 @@ allprojects {
         maven {
             url = 'https://maven.pkg.github.com/hardik575/QtonzSdk'
             credentials {
-                username = "hardik575"
-                password = "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"
+                username = "username"
+                password = "password"
             }
 
         }

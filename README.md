@@ -12,6 +12,15 @@
         maven {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
+
+        maven {
+            url = 'https://maven.pkg.github.com/hardik575/QtonzSdk'
+            credentials {
+                username = "username"
+                password = "password"
+            }
+
+        }
   
     implementation 'com.github.hardik575:qtonzsdk:$version'
     implementation 'com.google.android.play:core:1.10.3'
@@ -375,7 +384,7 @@ if (mApNativeAd != null) {
 </com.google.android.gms.ads.nativead.NativeAdView>
 
 ~~~ 
-# Native: Layout Big
+# Native: Layout small
 ~~~ 
 <com.google.android.gms.ads.nativead.NativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -560,8 +569,6 @@ btnIap.setOnClickListener(v -> AppPurchase.getInstance().purchase(MainActivity.t
         });
 
 ~~~
-
-
 # Intersial : Pre Load Show
 ~~~
 
@@ -585,15 +592,13 @@ btnIap.setOnClickListener(v -> AppPurchase.getInstance().purchase(MainActivity.t
              @Override
              public void onNextAction() {
                  super.onNextAction();
-                 intent.putExtra("id", 6);
-                 startActivity(intent);
+              
              }
 
              @Override
              public void onAdFailedToShow(@androidx.annotation.Nullable AdError adError) {
                  super.onAdFailedToShow(adError);
-                 intent.putExtra("id", 6);
-                 startActivity(intent);
+            
              }
          });
 ~~~

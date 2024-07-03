@@ -76,4 +76,40 @@ dependencies {
     implementation 'com.google.android.ump:user-messaging-platform:2.2.0'
 }
 
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
 
+afterEvaluate {
+
+    publishing {
+        publications {
+            LibraryRelease(MavenPublication) {
+                from components.release
+                artifact(sourceJar)
+                groupId = 'com.github.hardik575'
+                artifactId = 'qtonzsdk'
+                version = '1.0.3'
+            }
+
+        }
+        publications.all {
+            pom.withXml {
+                asNode().dependencies.'*'
+                        .findAll() {
+                            it.scope.text() == 'runtime' &&
+                                    project.configurations.implementation.allDependencies.find {
+                                        dep -> dep.name == it.artifactId.text()
+                                    }
+                        }.each { it.scope*.value = 'compile'}
+            }
+        }
+
+
+
+
+    }
+
+
+}

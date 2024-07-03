@@ -25,13 +25,7 @@ allprojects {
             url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea'
         }
 
-        maven {
-            url = 'https://maven.pkg.github.com/hardik575/QtonzSdk'
-            credentials {
-                username = "hardik575"
-                password = "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"
-            }
-        }
+
     }
 }
 

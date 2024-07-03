@@ -25,8 +25,8 @@ public class QtonzApp extends AdsMultiDexApplication {
     public String bannerId = "ca-app-pub-3940256099942544/9214589741";
     public String nativeId = "ca-app-pub-3940256099942544/2247696110";
     public String bannerCollapsingId = "ca-app-pub-3940256099942544/2014213617";
-    public String rewardAdID = "ca-app-pub-3940256099942544/2014213617";
-    public String appopenResumeId = "ca-app-pub-3940256099942544/2014213617";
+    public String rewardAdID = "ca-app-pub-3940256099942544/5224354917";
+    public String appopenResumeId = "ca-app-pub-3940256099942544/9257395921";
 
     private static QtonzApp context;
     public MutableLiveData<Boolean> isAdCloseSplash = new MutableLiveData<>();

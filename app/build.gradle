@@ -80,7 +80,7 @@ dependencies {
 
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
-    implementation 'com.github.hardik575:qtonzsdk:1.0.2'
+//    implementation 'com.github.hardik575:qtonzsdk:1.0.3'
 
 }
 repositories {

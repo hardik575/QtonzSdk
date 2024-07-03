@@ -85,6 +85,10 @@ public class AdsLoadActivity extends AppCompatActivity {
             txtView.setVisibility(View.VISIBLE);
             banerView.setVisibility(View.GONE);
             fr_ads.setVisibility(View.GONE);
+        } else if (checkId == 6) {
+            txtView.setVisibility(View.VISIBLE);
+            banerView.setVisibility(View.GONE);
+            fr_ads.setVisibility(View.GONE);
         } else if (checkId == 7) {
             txtView.setText("RewardAd Loded");
             txtView.setVisibility(View.VISIBLE);
@@ -100,7 +104,6 @@ public class AdsLoadActivity extends AppCompatActivity {
             banerView.setVisibility(View.GONE);
             fr_ads.setVisibility(View.GONE);
             layoutAdNative.setVisibility(View.VISIBLE);
-
 
 
             QtonzAd.getInstance().loadNativeAd(this, QtonzApp.getApplication().nativeId, R.layout.native_large, layoutAdNative, shimmerContainerNative, new AdCallback() {

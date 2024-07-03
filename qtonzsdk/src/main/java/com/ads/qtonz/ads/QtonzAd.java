@@ -385,6 +385,7 @@ public class QtonzAd {
 
 
     public void loadAndShowIntersialAd(Context context, String id, AdCallback callback) {
+        Log.e("intersial", "==> a");
         Admob.getInstance().directLoadAndInterstitial(context, id, callback);
     }
 

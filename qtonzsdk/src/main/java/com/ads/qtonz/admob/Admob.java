@@ -840,6 +840,7 @@ public class Admob {
 
     public void directLoadAndInterstitial(Context context, String id, final AdCallback callback) {
         AdmobHelper.setupAdmobData(context);
+        Log.e("intersial", "==>");
         if (AppPurchase.getInstance().isPurchased(context)) {
             callback.onNextAction();
             return;
@@ -868,6 +869,7 @@ public class Admob {
                     public void onAdLoaded(@NonNull InterstitialAd mInterstitialAd) {
 //                        if (adCallback != null)
 //                            adCallback.onInterstitialLoad(interstitialAd);
+                        Log.e("intersial", "==> onAdLoaded");
 
                         mInterstitialAd.setOnPaidEventListener(adValue -> {
                             QtonzLogEventManager.logPaidAdImpression(context,
@@ -885,6 +887,7 @@ public class Admob {
                             @Override
                             public void onAdDismissedFullScreenContent() {
                                 super.onAdDismissedFullScreenContent();
+                                Log.e("intersial", "==> onAdDismissedFullScreenContent");
                                 AppOpenManager.getInstance().setInterstitialShowing(false);
                                 SharePreferenceUtils.setLastImpressionInterstitialTime(context);
                                 if (callback != null) {
@@ -901,6 +904,7 @@ public class Admob {
                             @Override
                             public void onAdFailedToShowFullScreenContent(@NonNull AdError adError) {
                                 super.onAdFailedToShowFullScreenContent(adError);
+                                Log.e("intersial", "==> onAdFailedToShowFullScreenContent");
                                 if (callback != null) {
                                     callback.onAdFailedToShow(adError);
                                     if (!openActivityAfterShowInterAds) {
@@ -916,12 +920,14 @@ public class Admob {
                             @Override
                             public void onAdShowedFullScreenContent() {
                                 super.onAdShowedFullScreenContent();
+                                Log.e("intersial", "==> onAdShowedFullScreenContent");
                                 AppOpenManager.getInstance().setInterstitialShowing(true);
                             }
 
                             @Override
                             public void onAdClicked() {
                                 super.onAdClicked();
+                                Log.e("intersial", "==> onAdClicked");
                                 if (disableAdResumeWhenClickAds)
                                     AppOpenManager.getInstance().disableAdResumeByClickAction();
                                 if (callback != null) {
@@ -931,12 +937,30 @@ public class Admob {
                             }
                         });
 
+                        new Handler().postDelayed(() -> {
+                            if (((AppCompatActivity) context).getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.RESUMED)) {
+                                if (openActivityAfterShowInterAds && callback != null) {
+                                    callback.onNextAction();
+                                    new Handler().postDelayed(() -> {
+                                        if (dialog != null && dialog.isShowing() && !((Activity) context).isDestroyed())
+                                            dialog.dismiss();
+                                    }, 1500);
+                                }
+                                mInterstitialAd.show((Activity) context);
+                            } else {
+                                if (dialog != null && dialog.isShowing() && !((Activity) context).isDestroyed())
+                                    dialog.dismiss();
+                                callback.onAdFailedToShow(new AdError(0, "Show fail in background after show loading ad", "LuanDT"));
+                            }
+                        }, 800);
+
 
                     }
 
                     @Override
                     public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                         Log.i(TAG, loadAdError.getMessage());
+                        Log.e("intersial", "==> onAdFailedToLoad");
                         if (callback != null)
                             callback.onAdFailedToLoad(loadAdError);
                     }
